@@ -3,6 +3,9 @@
 
 #include <stddef.h>
 
+#include <ctime>
+#include <iostream>
+
 #define SHA256_BLOCK_SIZE 32
 #define ROTLEFT(a,b) (((a) << (b)) | ((a) >> (32-(b))))
 #define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
@@ -23,6 +26,15 @@ typedef struct
   unsigned long long bitlen;
   WORD state[8];
 } SHA256_CTX;
+
+typedef struct
+{
+  const char * fromAddress;
+  const char * toAddress;
+  float amount;
+} Transacao;
+
+Transacao criar_transacao(const char * fromAddress, const char * toAddress, float amount);
 
 void sha256_init(SHA256_CTX *ctx);
 void sha256_update(SHA256_CTX *ctx, const BYTE data[], size_t len);
