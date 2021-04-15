@@ -1,0 +1,15 @@
+# Introdução
+
+Este é um relatório de exemplo. Faça os eu relatório descrevendo o problema, as estruturas utilizdas e como utilizá-lo o programa.
+Não existe um número mínimo e máximo de linhas. Inclua quantas seções achar necessário.
+
+# Descrição
+
+Este projeto consiste na elaboracao de uma calculadora simples.
+A calculadora suporta números inteiros e as operações de soma e multiplicação.
+
+
+# Manual de Uso
+
+O usuário deverá digitar o primeiro valor, em inteiro, o operador desejado (+ ou x) e o segundo valor em inteiro.
+Caso o operador não for suportado, o programa irá imprimir um erro.
