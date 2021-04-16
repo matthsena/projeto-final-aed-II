@@ -115,17 +115,33 @@ void minerar_novo_bloco(int timestamp, const char *hash_anterior, int nounce) {
   int len =  strlen(hash_anterior) + strlen(str_timestamp) + strlen(str_nounce);
 
   char str_digest[len + 1];
+
   strcat(str_digest, str_timestamp);
-
   strcat(str_digest, hash_anterior);
-
   strcat(str_digest, str_nounce);
 
 
-	printf("%s\n", str_digest);
+  char *resultado = sha256(str_digest);
+  printf("\n%s\n", resultado);
 
-  char *resultado = sha256("abc");
-  printf("%s", resultado);
+  if (resultado[0] != '0') {
+    minerar_novo_bloco(timestamp, hash_anterior, nounce + 1);
+  } else {
+    printf("\nnounce: %d\n", nounce);
+  }
+
+
+
+
+
+  /*
+   = sha256("abc");
+  printf("%c", resultado[0]);
+
+  while (resultado[0] != '0') {
+    ++nounce;
+  } */
+
 
 
   /*
@@ -160,5 +176,5 @@ void minerar_transacoes(const char * address, Block *b) {
 
   printf("%d\n", b->timestamp);
 
-  minerar_novo_bloco(b->timestamp, "meetexto", 1111111);
+  minerar_novo_bloco(b->timestamp, "meetexto", 0);
 }
