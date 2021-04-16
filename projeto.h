@@ -38,12 +38,25 @@ typedef struct pendente
 {
   Transacao transacao;
   struct pendente * prox;
-} TransacaoPendente;
+} T_Pendente;
+
+typedef struct Block
+{
+  int timestamp;
+  char *hash_anterior;
+  T_Pendente * transacoes;
+  int nounce;
+  struct Block * prox;
+} Block;
+
 
 Transacao iniciar_transacao(const char * fromAddress, const char * toAddress, float amount);
 
-TransacaoPendente * adicionar_transacao(Transacao t, TransacaoPendente * p);
-void imprimir_lista(TransacaoPendente * p);
+T_Pendente * adicionar_transacao(const char * fromAddress, const char * toAddress, float amount, T_Pendente * p);
+
+void imprimir_lista(T_Pendente * p);
+
+Block * criar_novo_bloco(char *hash_anterior, T_Pendente * transacoes, int nounce);
 
 
 void sha256_init(SHA256_CTX *ctx);
