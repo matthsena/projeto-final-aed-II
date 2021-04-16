@@ -34,7 +34,17 @@ typedef struct
   float amount;
 } Transacao;
 
-Transacao criar_transacao(const char * fromAddress, const char * toAddress, float amount);
+typedef struct pendente
+{
+  Transacao transacao;
+  struct pendente * prox;
+} TransacaoPendente;
+
+Transacao iniciar_transacao(const char * fromAddress, const char * toAddress, float amount);
+
+TransacaoPendente * adicionar_transacao(Transacao t, TransacaoPendente * p);
+void imprimir_lista(TransacaoPendente * p);
+
 
 void sha256_init(SHA256_CTX *ctx);
 void sha256_update(SHA256_CTX *ctx, const BYTE data[], size_t len);
