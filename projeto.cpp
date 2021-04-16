@@ -5,7 +5,6 @@
 #include <string.h>
 #include <math.h> 
 
-// Apenas um exemplo. Alterei, inclua e implemente todas as funcoes necessarias.
 Transacao iniciar_transacao(const char *fromAddress, const char *toAddress, float amount) {
   Transacao t;
 
@@ -98,14 +97,14 @@ int tamanho_numero(int n) {
   int count = 0;
 
   while (n != 0) {
-    n = n / 10;     // n = n/10
+    n = n / 10;
     ++count;
   }
 
   return count;
 }
 
-void minerar_novo_bloco(int timestamp, const char *hash_anterior, int nounce) {
+Block * minerar_novo_bloco(int timestamp, const char *hash_anterior, int nounce) {
   char str_timestamp[tamanho_numero(timestamp)];
   sprintf(str_timestamp, "%d", timestamp);
 
@@ -125,40 +124,13 @@ void minerar_novo_bloco(int timestamp, const char *hash_anterior, int nounce) {
   printf("\n%s\n", resultado);
 
   if (resultado[0] != '0') {
-    minerar_novo_bloco(timestamp, hash_anterior, nounce + 1);
-  } else {
-    printf("\nnounce: %d\n", nounce);
+    return minerar_novo_bloco(timestamp, hash_anterior, nounce + 1);
   }
+  
 
+  printf("\nnounce: %d\n", nounce);
 
-
-
-
-  /*
-   = sha256("abc");
-  printf("%c", resultado[0]);
-
-  while (resultado[0] != '0') {
-    ++nounce;
-  } */
-
-
-
-  /*
-   while (hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')) {
-      nonce += 1;
-      hash = calculateHash();
-    }
-
-    debugBlock('👷 🚧 A new block has been mined: ', hash);
-
-    return {
-      timestamp,
-      transactions,
-      previusHash,
-      nonce,
-      hash
-    }*/ 
+  return criar_novo_bloco(resultado, NULL, nounce);
 }
 
 
@@ -168,13 +140,11 @@ void minerar_transacoes(const char * address, Block *b) {
   }
 
   char *hash_anterior =  b->hash;
-  // a partir daqui gerar bloco com mineracao
-
-  //b = adicionar_novo_bloco(char *hash, T_Pendente * transacoes, int nounce, Block * bloco)
-
-
 
   printf("%d\n", b->timestamp);
 
-  minerar_novo_bloco(b->timestamp, "meetexto", 0);
+  Block *tmp = minerar_novo_bloco(b->timestamp, "meetexto", 0);
+
+  printf("%d\n", tmp->timestamp);
+
 }
