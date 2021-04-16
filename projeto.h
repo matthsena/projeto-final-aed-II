@@ -43,7 +43,7 @@ typedef struct pendente
 typedef struct Block
 {
   int timestamp;
-  char *hash_anterior;
+  char *hash;
   T_Pendente * transacoes;
   int nounce;
   struct Block * prox;
@@ -56,7 +56,10 @@ T_Pendente * adicionar_transacao(const char * fromAddress, const char * toAddres
 
 void imprimir_lista(T_Pendente * p);
 
-Block * criar_novo_bloco(char *hash_anterior, T_Pendente * transacoes, int nounce);
+Block * adicionar_novo_bloco(char *hash_anterior, T_Pendente * transacoes, int nounce, Block * b);
+
+void minerar_transacoes(const char * address, Block *b);
+
 
 
 void sha256_init(SHA256_CTX *ctx);

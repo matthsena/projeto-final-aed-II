@@ -4,14 +4,14 @@
 
 int main()
 {
-  
-
   char *resultado = sha256("loremipsumksdjdjfjjgjgjg");
 
   // CRIANDO GENESIS BLOCK DA REDE
-  Block * blockchain = criar_novo_bloco(NULL, NULL, 0);
+  Block * blockchain =  NULL;
+  
+  blockchain = adicionar_novo_bloco(NULL, NULL, 0, NULL);
 
-  printf("%d\n", blockchain->timestamp);
+  //printf("%d\n", blockchain->timestamp);
 
   // Lista de transações pendentes no bloco atual
   T_Pendente * pendente = NULL;
@@ -24,6 +24,7 @@ int main()
 
   imprimir_lista(pendente);
 
+  minerar_transacoes("Pagador", blockchain);
   //printf("%s", resultado);
 
   printf("\n");

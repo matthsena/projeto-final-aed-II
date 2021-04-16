@@ -1,8 +1,9 @@
-#include <iostream>
 #include "projeto.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
+#include <math.h> 
 
 // Apenas um exemplo. Alterei, inclua e implemente todas as funcoes necessarias.
 Transacao iniciar_transacao(const char *fromAddress, const char *toAddress, float amount) {
@@ -15,6 +16,36 @@ Transacao iniciar_transacao(const char *fromAddress, const char *toAddress, floa
   return t;
 }
 
+
+Block * criar_novo_bloco(char *hash, T_Pendente * transacoes, int nounce) {
+    Block *novo_bloco = (Block *) malloc(sizeof(Block));
+
+    novo_bloco->nounce = nounce;
+    novo_bloco->hash = hash;
+    novo_bloco->transacoes = transacoes;
+    novo_bloco->timestamp = (int)time(NULL);
+
+    return novo_bloco;
+}
+
+Block * adicionar_novo_bloco(char *hash, T_Pendente * transacoes, int nounce, Block * bloco) {
+    if (bloco == NULL) {
+      return criar_novo_bloco(hash, transacoes, nounce);
+    }
+        
+    Block *fim = bloco;
+
+    while (fim->prox != NULL) {
+        fim = fim->prox;
+    }
+
+    fim->prox = criar_novo_bloco(hash, transacoes, nounce);
+
+    return bloco;
+}
+
+
+
 T_Pendente* criar_no_transacao(Transacao t) {
     T_Pendente *nova_transacao = (T_Pendente *) malloc(sizeof(T_Pendente));
     nova_transacao->transacao = t;
@@ -22,16 +53,6 @@ T_Pendente* criar_no_transacao(Transacao t) {
     return nova_transacao;
 }
 
-Block * criar_novo_bloco(char *hash_anterior, T_Pendente * transacoes, int nounce) {
-    Block *novo_bloco = (Block *) malloc(sizeof(Block));
-
-    novo_bloco->nounce = nounce;
-    novo_bloco->hash_anterior = hash_anterior;
-    novo_bloco->transacoes = transacoes;
-    novo_bloco->timestamp = (int)time(NULL);
-
-    return novo_bloco;
-}
 
 T_Pendente* adicionar_transacao(const char * fromAddress, const char * toAddress, float amount, T_Pendente * p) {
 
@@ -71,4 +92,73 @@ void liberar_lista(T_Pendente *lista)
         atual = atual->prox;
         free(alvo);
     }
+}
+
+int tamanho_numero(int n) {
+  int count = 0;
+
+  while (n != 0) {
+    n = n / 10;     // n = n/10
+    ++count;
+  }
+
+  return count;
+}
+
+void minerar_novo_bloco(int timestamp, const char *hash_anterior, int nounce) {
+  char str_timestamp[tamanho_numero(timestamp)];
+  sprintf(str_timestamp, "%d", timestamp);
+
+  char str_nounce[tamanho_numero(nounce)];
+  sprintf(str_nounce, "%d", nounce);
+
+  int len =  strlen(hash_anterior) + strlen(str_timestamp) + strlen(str_nounce);
+
+  char str_digest[len + 1];
+  strcat(str_digest, str_timestamp);
+
+  strcat(str_digest, hash_anterior);
+
+  strcat(str_digest, str_nounce);
+
+
+	printf("%s\n", str_digest);
+
+  char *resultado = sha256("abc");
+  printf("%s", resultado);
+
+
+  /*
+   while (hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')) {
+      nonce += 1;
+      hash = calculateHash();
+    }
+
+    debugBlock('👷 🚧 A new block has been mined: ', hash);
+
+    return {
+      timestamp,
+      transactions,
+      previusHash,
+      nonce,
+      hash
+    }*/ 
+}
+
+
+void minerar_transacoes(const char * address, Block *b) {
+  while(b->prox != NULL) {
+    b = b->prox;
+  }
+
+  char *hash_anterior =  b->hash;
+  // a partir daqui gerar bloco com mineracao
+
+  //b = adicionar_novo_bloco(char *hash, T_Pendente * transacoes, int nounce, Block * bloco)
+
+
+
+  printf("%d\n", b->timestamp);
+
+  minerar_novo_bloco(b->timestamp, "meetexto", 1111111);
 }
