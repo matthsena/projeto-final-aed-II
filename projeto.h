@@ -1,11 +1,38 @@
-#ifndef SHA256_H
-#define SHA256_H
+#ifndef UFABC_COIN
+#define UFABC_COIN
 
-#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include <ctime>
-#include <iostream>
+typedef struct {
+  char * remetente;
+  char * destinatario;
+  float valor;
+} Transacao;
 
+typedef struct pendente {
+  Transacao transacao;
+  struct pendente * prox;
+} Pendentes;
+
+typedef struct Block {
+  int timestamp;
+  char *hash;
+  Pendentes * transacoes;
+  int nounce;
+  struct Block * prox;
+} Block;
+
+
+Block * adicionar_bloco(char *hash_anterior, Pendentes * transacoes, int nounce, Block * b);
+Pendentes * adicionar_transacao(char * remetente, char * destinatario, float valor, Pendentes * p);
+
+void imprimir_lista(Pendentes * p);
+
+
+void minerar_bloco(char * minerador, Block *b, Pendentes * transacoes);
+
+// DECLARAÇOES PARA O SHA256
 #define SHA256_BLOCK_SIZE 32
 #define ROTLEFT(a,b) (((a) << (b)) | ((a) >> (32-(b))))
 #define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
@@ -19,48 +46,12 @@
 typedef unsigned char BYTE;
 typedef unsigned int WORD;
 
-typedef struct
-{
+typedef struct {
   BYTE data[64];
   WORD datalen;
   unsigned long long bitlen;
   WORD state[8];
 } SHA256_CTX;
-
-typedef struct
-{
-  const char * fromAddress;
-  const char * toAddress;
-  float amount;
-} Transacao;
-
-typedef struct pendente
-{
-  Transacao transacao;
-  struct pendente * prox;
-} T_Pendente;
-
-typedef struct Block
-{
-  int timestamp;
-  char *hash;
-  T_Pendente * transacoes;
-  int nounce;
-  struct Block * prox;
-} Block;
-
-
-Transacao iniciar_transacao(const char * fromAddress, const char * toAddress, float amount);
-
-T_Pendente * adicionar_transacao(const char * fromAddress, const char * toAddress, float amount, T_Pendente * p);
-
-void imprimir_lista(T_Pendente * p);
-
-Block * adicionar_novo_bloco(char *hash_anterior, T_Pendente * transacoes, int nounce, Block * b);
-
-void minerar_transacoes(const char * address, Block *b);
-
-
 
 void sha256_init(SHA256_CTX *ctx);
 void sha256_update(SHA256_CTX *ctx, const BYTE data[], size_t len);

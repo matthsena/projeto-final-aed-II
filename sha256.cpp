@@ -1,9 +1,5 @@
-// Apenas um exemplo. Alterei, inclua e implemente todas as funcoes necessarias.
 #include "projeto.h"
-#include <stdlib.h>
 #include <memory.h>
-#include <stdio.h>
-#include <string.h>
 
 static const WORD k[64] = {
 	0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
@@ -16,14 +12,16 @@ static const WORD k[64] = {
 	0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 };
 
-void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
-{
+void sha256_transform(SHA256_CTX *ctx, const BYTE data[]) {
 	WORD a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
 
-	for (i = 0, j = 0; i < 16; ++i, j += 4)
-		m[i] = (data[j] << 24) | (data[j + 1] << 16) | (data[j + 2] << 8) | (data[j + 3]);
-	for ( ; i < 64; ++i)
-		m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
+	for (i = 0, j = 0; i < 16; ++i, j += 4) {
+    m[i] = (data[j] << 24) | (data[j + 1] << 16) | (data[j + 2] << 8) | (data[j + 3]);
+  }
+		
+	for ( ; i < 64; ++i) {
+    m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
+  }
 
 	a = ctx->state[0];
 	b = ctx->state[1];
@@ -57,8 +55,7 @@ void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
 	ctx->state[7] += h;
 }
 
-void sha256_init(SHA256_CTX *ctx)
-{
+void sha256_init(SHA256_CTX *ctx) {
 	ctx->datalen = 0;
 	ctx->bitlen = 0;
 	ctx->state[0] = 0x6a09e667;
@@ -71,8 +68,7 @@ void sha256_init(SHA256_CTX *ctx)
 	ctx->state[7] = 0x5be0cd19;
 }
 
-void sha256_update(SHA256_CTX *ctx, const char data[], size_t len)
-{
+void sha256_update(SHA256_CTX *ctx, const char data[], size_t len) {
 	WORD i;
 
 	for (i = 0; i < len; ++i) {
@@ -86,21 +82,21 @@ void sha256_update(SHA256_CTX *ctx, const char data[], size_t len)
 	}
 }
 
-void sha256_final(SHA256_CTX *ctx, int hash[])
-{
+void sha256_final(SHA256_CTX *ctx, int hash[]) {
 	WORD i;
 
 	i = ctx->datalen;
 
 	if (ctx->datalen < 56) {
 		ctx->data[i++] = 0x80;
-		while (i < 56)
-			ctx->data[i++] = 0x00;
-	}
-	else {
+		while (i < 56) {
+      ctx->data[i++] = 0x00;
+    }
+	} else {
 		ctx->data[i++] = 0x80;
-		while (i < 64)
-			ctx->data[i++] = 0x00;
+		while (i < 64) {
+      ctx->data[i++] = 0x00;
+    }
 		sha256_transform(ctx, ctx->data);
 		memset(ctx->data, 0, 56);
 	}
@@ -130,20 +126,17 @@ void sha256_final(SHA256_CTX *ctx, int hash[])
 
 char * sha256(const char *data) {
   SHA256_CTX foo;
-
   int hash[SHA256_BLOCK_SIZE];
   int len =  strlen(data);
+  char *string = (char *) malloc((SHA256_BLOCK_SIZE*2+1) * sizeof(char));
 
   sha256_init(&foo);
   sha256_update(&foo, data, len);
   sha256_final(&foo, hash);
 
-  char *string = (char *) malloc((SHA256_BLOCK_SIZE*2+1) * sizeof(char));
-
-  for(unsigned int i=0; i<SHA256_BLOCK_SIZE; i++) {
-      sprintf(&string[i*2], "%02x", (unsigned int)hash[i]);
-    }
+  for(int i=0; i<SHA256_BLOCK_SIZE; i++) {
+    sprintf(&string[i*2], "%02x", (int)hash[i]);
+  }
 
   return string;
-
 }
