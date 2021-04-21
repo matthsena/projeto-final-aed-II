@@ -23,6 +23,14 @@ typedef struct Block {
   struct Block * prox;
 } Block;
 
+typedef struct MineracaoParams {
+  char * minerador; 
+  Block * b; 
+  Pendentes * transacoes;
+  char * vencedor;
+  int valor_inicial;
+} MineracaoParams;
+
 
 Block * adicionar_bloco(char *hash_anterior, Pendentes * transacoes, int nounce, Block * b);
 Pendentes * adicionar_transacao(char * remetente, char * destinatario, float valor, Pendentes * p);
@@ -30,7 +38,7 @@ Pendentes * adicionar_transacao(char * remetente, char * destinatario, float val
 void imprimir_lista(Pendentes * p);
 
 
-void minerar_bloco(char * minerador, Block *b, Pendentes * transacoes);
+void * minerar_bloco(void * args);
 
 // DECLARAÇOES PARA O SHA256
 #define SHA256_BLOCK_SIZE 32

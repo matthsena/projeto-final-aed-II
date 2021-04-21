@@ -2,12 +2,13 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include <pthread.h>
 
 Block * criar_novo_bloco(char *hash, Pendentes * transacoes, int nounce) {
     Block *novo_bloco = (Block *) malloc(sizeof(Block));
 
     novo_bloco->nounce = nounce;
-    novo_bloco->hash = hash;
+    novo_bloco->hash = hash ? hash : sha256((const char *) "genesis block");
     novo_bloco->transacoes = transacoes;
     novo_bloco->timestamp = (int)time(NULL);
 
@@ -104,13 +105,15 @@ int tamanho_numero(int n) {
   return len;
 }
 
-Block * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes) {
+void minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes) {
+
+  
   char str_timestamp[tamanho_numero(timestamp)];
   sprintf(str_timestamp, "%d", timestamp);
 
   char str_nounce[tamanho_numero(nounce)];
   sprintf(str_nounce, "%d", nounce);
-
+  
   int len = strlen(hash_anterior) + strlen(str_timestamp) + strlen(str_nounce);
   char str_digest[len + 1];
 
@@ -122,36 +125,46 @@ Block * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior,
 
   printf("\n%s\n", resultado);
 
-  if (strncmp(resultado, "000", 3) != 0) {
+  if (strncmp(resultado, "00", 2) != 0) {
     return minerar_novo_bloco(minerador, timestamp, hash_anterior, nounce + 1, transacoes);
   }
 
   // limpar_transacoes(&transacoes);
 
 
+  printf("\nminer: %s\n", minerador);
   printf("\nnounce: %d\n", nounce);
+
   // TODO
   // 1. Adicionar transação da rede para o minerador
   // 2. Fazer operações nas carteiras a partir de transações pendentes
   // 3. Liberar lista de transações pendentes
 
-  return criar_novo_bloco(resultado, NULL, nounce);
+  // return criar_novo_bloco(resultado, NULL, nounce);
 }
 
 
-void minerar_bloco(char * minerador, Block * b, Pendentes * transacoes) {
-  while(b->prox != NULL) {
-    b = b->prox;
+
+void * minerar_bloco(void * args) {
+  MineracaoParams * mx = (MineracaoParams *) args;
+
+  while(mx->b->prox != NULL) {
+    mx->b = mx->b->prox;
   }
 
-  char *hash_anterior =  b->hash;
+  char *hash_anterior =  mx->b->hash;
+  
 
-  printf("%d\n", b->timestamp);
+  printf("%d\n", mx->b->timestamp);
 
+  minerar_novo_bloco(mx->minerador, mx->b->timestamp, hash_anterior, mx->valor_inicial, mx->transacoes);
+
+  /*
   char * valor = (char *) "meetexto";
 
   Block *tmp = minerar_novo_bloco(minerador, b->timestamp, valor, 0, transacoes);
 
   printf("%d\n", tmp->timestamp);
-
+*/
+  pthread_exit(NULL);
 }
