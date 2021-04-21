@@ -77,18 +77,21 @@ void imprimir_lista(Pendentes *lista) {
         atual = atual->prox;
     }
 }
+/*
+void limpar_transacoes(Pendentes ** transacoes) {
+    Pendentes *atual = * transacoes;
+    Pendentes *prox;
 
-void limpar_transacoes(Pendentes *transacoes) {
-    Pendentes *tmp;
-
-    while (transacoes->prox != NULL) {
-      tmp = transacoes;
-      transacoes = transacoes->prox;
-      free(tmp);
+    while (atual != NULL) {
+      prox = atual->prox;
+      free(atual);
+      atual = prox;
     }
 
+    * transacoes = NULL;
+
     printf("Limpo");
-}
+} */
 
 int tamanho_numero(int n) {
   int len = 0;
@@ -119,18 +122,18 @@ Block * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior,
 
   printf("\n%s\n", resultado);
 
-  if (resultado[0] != '0') {
+  if (strncmp(resultado, "000", 3) != 0) {
     return minerar_novo_bloco(minerador, timestamp, hash_anterior, nounce + 1, transacoes);
   }
 
-  //limpar_transacoes(transacoes);
+  // limpar_transacoes(&transacoes);
 
-  
+
   printf("\nnounce: %d\n", nounce);
   // TODO
   // 1. Adicionar transação da rede para o minerador
   // 2. Fazer operações nas carteiras a partir de transações pendentes
-
+  // 3. Liberar lista de transações pendentes
 
   return criar_novo_bloco(resultado, NULL, nounce);
 }
