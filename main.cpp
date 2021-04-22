@@ -1,11 +1,5 @@
 #include "projeto.h"
 #include <pthread.h>
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <pthread.h>
-#include <unistd.h>
 
 int main(int argc, char *argv[]) {
   // CRIANDO GENESIS BLOCK DA REDE

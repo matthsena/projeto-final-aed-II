@@ -1,9 +1,5 @@
 #include "projeto.h"
 #include <time.h>
-#include <string.h>
-#include <math.h>
-#include <pthread.h>
-#include <unistd.h>
 
 pthread_mutex_t lock;
 
@@ -293,5 +289,5 @@ void retornar_saldo(hashTable h, char c[STR_SIZE]) {
         lista = lista->proximo;
     }
 
-    printf("Nome: %s \nSaldo: $ %.5f UFABC Coins\n\n", nome, saldo);
+    printf("Nome: %s \nSaldo: $ %.5f UFABC Coins\n\n", c, saldo);
 }

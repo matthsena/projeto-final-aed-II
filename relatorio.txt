@@ -1,15 +1,23 @@
 # Introdução
 
-Este é um relatório de exemplo. Faça os eu relatório descrevendo o problema, as estruturas utilizdas e como utilizá-lo o programa.
-Não existe um número mínimo e máximo de linhas. Inclua quantas seções achar necessário.
+O Blockchain tem se popularizado muito nos ultimos anos, principalmente pela popularização das criptomoedas, apesar de ter diversas outras aplicações para a rede Blockchain, como NFTs, documentos digitalizados, IoT, segurança, privacidade e etc, o seu principal uso ainda é a transação de criptomoedas. Pessoalmente eu sou apaixonado pelo tema, inclusive tenho um texto no Medium explicando um pouco mais a fundo sobre a rede Blockchain (https://matheus-sena.medium.com/blockchain-o-consenso-da-tecnologia-e16752bee13d).
+
+Com base nisso, foi desenvolvida uma simulação de uma rede Blockchain, utilizando Threads e Hash Table.
+
 
 # Descrição
 
-Este projeto consiste na elaboracao de uma calculadora simples.
-A calculadora suporta números inteiros e as operações de soma e multiplicação.
+Esse projeto consiste em uma simulação de uma rede Blockchain, baseando-se no algoritmo de Proof of Work, esse foi implementado com a ajuda do SHA256. Para utilizar o SHA256, como não existe nativamente no C/C++, foi necessário fazer a implementação manualmente, para isso me baseei em alguns repositórios do GitHub e em outros fóruns na internet, em especial nos links abaixo:
 
+- SHA256 (OpenSSL): https://github.com/openssl/openssl/blob/master/crypto/sha/sha256.c
+- SHA256 (crypto-algorithms): https://github.com/B-Con/crypto-algorithms/blob/master/sha256.c
+- SHA256 (Apple Open Source): https://opensource.apple.com/source/clamav/clamav-158/clamav.Bin/clamav-0.98/libclamav/sha256.c.auto.html
+- SHA256 (Artigo Medium): https://medium.com/a-42-journey/implementing-the-sha256-and-md5-hash-functions-in-c-78c17e657794
+
+Nesse contexto, as Threads são utilizadas para simular diferentes mineradores competindo entre si para ver quem encontra primeiro o valor do NOUNCE do bloco que está sendo minerado, a fim de receber uma recompensa em criptomoedas (No caso 25 UFABC Coins), que será depositado a carteira do minerador após o próximo bloco ser minerado.
+
+A Hash Table foi implementada para conter as informações das carteiras dos usuários da rede.
 
 # Manual de Uso
 
-O usuário deverá digitar o primeiro valor, em inteiro, o operador desejado (+ ou x) e o segundo valor em inteiro.
-Caso o operador não for suportado, o programa irá imprimir um erro.
+O usuário deverá digitar o numero de participantes da rede (inteiro), após isso o nome de cada participante (string), o nome do remetente, o nome do destinatário, e o valor que será enviado (float).
