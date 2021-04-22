@@ -52,6 +52,7 @@ typedef struct MineracaoParams {
   Block * b; 
   Pendentes * transacoes;
   int valor_inicial;
+  hashTable * t;
 } MineracaoParams;
 
 typedef struct MineracaoRetorno {

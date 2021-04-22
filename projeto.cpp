@@ -98,6 +98,71 @@ void limpar_transacoes(Pendentes ** transacoes) {
     printf("Limpo");
 } */
 
+hashTable * realizar_transacao_carteira(hashTable * ht, char c[STR_SIZE], float valor) {
+
+  if (c == NULL) {
+    return ht;
+  }
+
+  int idx = hash(c, ht->tamanho);
+    
+  listaEncadeada *lista;
+  lista = ht->tabela.encadeada[idx].primeiro;
+
+  while(lista != NULL) {
+      if (strcmp(lista->chave, c) == 0) {
+          lista->valor.saldo = lista->valor.saldo + valor;
+          break;
+      }
+
+      lista = lista->proximo;
+  }
+
+  return ht;
+}
+
+void realizar_transacoes(Pendentes *lista, hashTable * ht) {
+    if (lista == NULL)
+      return;
+
+    Pendentes *atual = lista;
+    while (atual != NULL)
+    {
+        printf("remetente: %s, destinatario: %s, valor: %f\n", atual->transacao.remetente, atual->transacao.destinatario,
+         atual->transacao.valor);
+
+        ht = realizar_transacao_carteira(ht, atual->transacao.remetente, atual->transacao.valor * - 1);
+        ht = realizar_transacao_carteira(ht, atual->transacao.destinatario, atual->transacao.valor);
+         
+        
+
+        // IMPRIMINDO O SALDO
+         int idx = hash(atual->transacao.remetente, ht->tamanho);
+    
+          listaEncadeada *lista;
+          lista = ht->tabela.encadeada[idx].primeiro;
+
+          char * nome;
+          float saldo;
+
+          while(lista != NULL) {
+              if (strcmp(lista->chave, atual->transacao.remetente) == 0) {
+                  
+                  nome = lista->valor.nome;
+                  saldo = lista->valor.saldo;
+                  break;
+              }
+              lista = lista->proximo;
+          }
+
+          printf("saldo: %f\n", saldo);
+
+        ///
+
+        atual = atual->prox;
+    }
+}
+
 int tamanho_numero(int n) {
   int len = 0;
 
@@ -109,7 +174,7 @@ int tamanho_numero(int n) {
   return len;
 }
 
-MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes) {
+MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes, hashTable * ht ) {
 
   
   char str_timestamp[tamanho_numero(timestamp)];
@@ -132,7 +197,7 @@ MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *has
   }
 
   if (found_nounce == 0 && strncmp(resultado, "000", 3) != 0) {
-    return minerar_novo_bloco(minerador, timestamp, hash_anterior, nounce + 1, transacoes);
+    return minerar_novo_bloco(minerador, timestamp, hash_anterior, nounce + 1, transacoes, ht);
   }
 
   pthread_mutex_lock(&lock);
@@ -149,6 +214,9 @@ MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *has
   // 2. Fazer operações nas carteiras a partir de transações pendentes
   // 3. Liberar lista de transações pendentes
 
+  // realizar transações
+  realizar_transacoes(transacoes, ht);
+
   transacoes = adicionar_transacao(NULL, minerador, 25.0, transacoes);
 
   MineracaoRetorno * retorno = (MineracaoRetorno *) malloc(sizeof(MineracaoRetorno));
@@ -164,7 +232,6 @@ MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *has
 
 void * minerar_bloco(void * args) {
   MineracaoParams * mx = (MineracaoParams *) args;
-  printf("SORTUDO %s\n", mx->minerador);
 
   while(mx->b->prox != NULL) {
     mx->b = mx->b->prox;
@@ -172,7 +239,7 @@ void * minerar_bloco(void * args) {
 
   char *hash_anterior =  mx->b->hash;
   
-  MineracaoRetorno *tmp = minerar_novo_bloco(mx->minerador, mx->b->timestamp, hash_anterior, mx->valor_inicial, mx->transacoes);
+  MineracaoRetorno *tmp = minerar_novo_bloco(mx->minerador, mx->b->timestamp, hash_anterior, mx->valor_inicial, mx->transacoes, mx->t);
 
   mx->b = adicionar_bloco(hash_anterior, tmp->transacoes, tmp->nounce, mx->b);
 
