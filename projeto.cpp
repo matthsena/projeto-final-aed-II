@@ -78,25 +78,13 @@ void imprimir_lista(Pendentes *lista) {
     Pendentes *atual = lista;
     while (atual != NULL)
     {
-        printf("%f\n", atual->transacao.valor);
+        printf("%s tem a receber $ %f UFABC Coins de: %s\n\n", 
+        atual->transacao.destinatario,  atual->transacao.valor,
+        atual->transacao.remetente? atual->transacao.remetente : "REDE BLOCKCHAIN (Prêmio de mineração)");
+        
         atual = atual->prox;
     }
 }
-/*
-void limpar_transacoes(Pendentes ** transacoes) {
-    Pendentes *atual = * transacoes;
-    Pendentes *prox;
-
-    while (atual != NULL) {
-      prox = atual->prox;
-      free(atual);
-      atual = prox;
-    }
-
-    * transacoes = NULL;
-
-    printf("Limpo");
-} */
 
 hashTable * realizar_transacao_carteira(hashTable * ht, char c[STR_SIZE], float valor) {
 
@@ -136,30 +124,6 @@ void realizar_transacoes(Pendentes *lista, hashTable * ht) {
         free(atual);
 
         atual = prox;
-
-        // IMPRIMINDO O SALDO
-        /*
-         int idx = hash(atual->transacao.remetente, ht->tamanho);
-    
-          listaEncadeada *lista;
-          lista = ht->tabela.encadeada[idx].primeiro;
-
-          char * nome;
-          float saldo;
-
-          while(lista != NULL) {
-              if (strcmp(lista->chave, atual->transacao.remetente) == 0) {
-                  
-                  nome = lista->valor.nome;
-                  saldo = lista->valor.saldo;
-                  break;
-              }
-              lista = lista->proximo;
-          }
-
-          printf("saldo: %f\n", saldo);
-          */
-        //
     }
 
     lista = NULL;
@@ -178,7 +142,6 @@ int tamanho_numero(int n) {
 
 MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes, hashTable * ht ) {
 
-  
   char str_timestamp[tamanho_numero(timestamp)];
   sprintf(str_timestamp, "%d", timestamp);
 
@@ -210,17 +173,9 @@ MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *has
 
   found_nounce = 1;
 
-  // limpar_transacoes(&transacoes);
-  // TODO
-  // 1. Adicionar transação da rede para o minerador
-  // 2. Fazer operações nas carteiras a partir de transações pendentes
-  // 3. Liberar lista de transações pendentes
-
-  // realizar transações
   realizar_transacoes(transacoes, ht); 
   
   transacoes = NULL;
-
   transacoes = adicionar_transacao(NULL, minerador, 25.0, transacoes);
 
   MineracaoRetorno * retorno = (MineracaoRetorno *) malloc(sizeof(MineracaoRetorno));
@@ -338,5 +293,5 @@ void retornar_saldo(hashTable h, char c[STR_SIZE]) {
         lista = lista->proximo;
     }
 
-    printf("Nome: %s \nSaldo: %.5f UFABC Tokens\n\n", nome, saldo);
+    printf("Nome: %s \nSaldo: $ %.5f UFABC Coins\n\n", nome, saldo);
 }

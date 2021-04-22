@@ -10,8 +10,9 @@
 int main(int argc, char *argv[]) {
   // CRIANDO GENESIS BLOCK DA REDE
   Block * blockchain =  NULL;
-  printf("OLA REDE BLOCKCHAN 2.0\n");
-  
+  printf("REDE BLOCKCHAN UFABC COIN\n");
+  printf("---------\n");
+
   blockchain = adicionar_bloco(NULL, NULL, 0, NULL);
   // Lista de transações pendentes no bloco atual
   Pendentes * pendente = NULL;
@@ -47,11 +48,10 @@ int main(int argc, char *argv[]) {
 
   pendente = adicionar_transacao(pagador, recebidor, valor_transacionado, pendente);
 
-  printf("LISTA DE PENDENTES \n");
-
+  printf("---------\n");
+  printf("LISTA DE TRANSAÇOES PENDENTES \n");
   imprimir_lista(pendente);
 
-  printf("INICIO MINERACAO \n");
   // criando pthread
   pthread_t thread[tamanho_hash];
 
@@ -73,8 +73,15 @@ int main(int argc, char *argv[]) {
     pthread_join( thread[i], NULL);
   }
 
-  printf("LISTA DE PENDENTES \n");
+  printf("---------\n");
+  printf("SALDOS \n");
 
+   for (int k = 0; k < tamanho_hash; k++) {
+    retornar_saldo(tabela_hash, nomes[k]);
+  }
+
+  printf("---------\n");
+  printf("LISTA DE TRANSAÇOES PENDENTES \n");
   imprimir_lista(pendente);
 
   return 0;
