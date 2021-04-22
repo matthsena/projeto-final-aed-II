@@ -164,6 +164,7 @@ MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *has
 
 void * minerar_bloco(void * args) {
   MineracaoParams * mx = (MineracaoParams *) args;
+  printf("SORTUDO %s\n", mx->minerador);
 
   while(mx->b->prox != NULL) {
     mx->b = mx->b->prox;
@@ -176,6 +177,7 @@ void * minerar_bloco(void * args) {
   mx->b = adicionar_bloco(hash_anterior, tmp->transacoes, tmp->nounce, mx->b);
 
   found_nounce = 0;
+
 
   pthread_exit(NULL);
 }
