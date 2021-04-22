@@ -179,3 +179,91 @@ void * minerar_bloco(void * args) {
 
   pthread_exit(NULL);
 }
+
+
+int hash(const char chave[STR_SIZE], int tamanho, int tentativa) {
+    int h = chave[0];
+    for (int i = 1; chave[i] != '\0'; i++)
+        h = (h * 251 * chave[i]) % tamanho;
+    return (h + tentativa) % tamanho;
+}
+
+hashTable criar_hash_table(int t) {
+    hashTable h;
+    h.tamanho = t;
+    
+    h.tabela.encadeada = (hashEncadeada*) malloc(sizeof(hashEncadeada) * t);
+    for (int i = 0; i < t; i++)
+        h.tabela.encadeada[i].primeiro = NULL;
+    
+    return h;
+}
+
+void destruirListaEncadeada(listaEncadeada *lista) {
+    listaEncadeada *atual = lista;
+    listaEncadeada *proximo = nullptr;
+
+    while (atual != NULL) {
+        proximo = atual->proximo;
+        free(atual);
+        atual = proximo;
+    }
+
+    lista = NULL;
+}
+
+void destruir_hash_table(hashTable h) {
+      for (int i = 0; i < h.tamanho; i++)
+          destruirListaEncadeada(h.tabela.encadeada[i].primeiro);
+
+      free(h.tabela.encadeada);
+      h.tabela.encadeada = NULL;
+}
+
+listaEncadeada *novoItemHashing(char c[STR_SIZE], Carteira v) {
+    listaEncadeada *item;
+    item = (listaEncadeada *) malloc(sizeof(listaEncadeada));
+    strcpy(item->chave, c);
+    item->valor = v;
+    item->proximo = NULL;
+    
+    return item;
+}
+
+void inserir_hash_table(hashTable h, char c[STR_SIZE], Carteira v) {
+    int idx = hash(c, h.tamanho);
+    
+    if (h.tabela.encadeada[idx].primeiro == NULL) {
+        h.tabela.encadeada[idx].primeiro = novoItemHashing(c, v);
+    } else {
+        listaEncadeada *lista;
+        lista = h.tabela.encadeada[idx].primeiro;
+        
+        while(lista->proximo != NULL) {
+            lista = lista->proximo;
+        }       
+        lista->proximo = novoItemHashing(c, v);
+    }
+}
+
+void retornar_saldo(hashTable h, char c[STR_SIZE]) {
+    int idx = hash(c, h.tamanho);
+    
+    listaEncadeada *lista;
+    lista = h.tabela.encadeada[idx].primeiro;
+
+    char * nome;
+    float saldo;
+
+    while(lista != NULL) {
+        if (strcmp(lista->chave, c) == 0) {
+            
+            nome = lista->valor.nome;
+            saldo = lista->valor.saldo;
+            break;
+        }
+        lista = lista->proximo;
+    }
+
+    printf("Nome: %s \nSaldo: %.5f UFABC Tokens\n\n", nome, saldo);
+}

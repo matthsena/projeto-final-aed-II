@@ -5,6 +5,7 @@
 int main(int argc, char *argv[]) {
   // CRIANDO GENESIS BLOCK DA REDE
   Block * blockchain =  NULL;
+  printf("OLA REDE BLOCKCHAN\n");
   
   blockchain = adicionar_bloco(NULL, NULL, 0, NULL);
 
