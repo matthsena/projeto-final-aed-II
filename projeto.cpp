@@ -3,6 +3,11 @@
 #include <string.h>
 #include <math.h>
 #include <pthread.h>
+#include <unistd.h>
+
+pthread_mutex_t lock;
+
+int found_nounce = 0;
 
 Block * criar_novo_bloco(char *hash, Pendentes * transacoes, int nounce) {
     Block *novo_bloco = (Block *) malloc(sizeof(Block));
@@ -47,7 +52,6 @@ Pendentes* criar_no_transacao(Transacao t) {
     nova_transacao->prox = NULL;
     return nova_transacao;
 }
-
 
 Pendentes* adicionar_transacao(char * remetente, char * destinatario, float valor, Pendentes * p) {
     Transacao t = iniciar_transacao(remetente, destinatario, valor);
@@ -105,7 +109,7 @@ int tamanho_numero(int n) {
   return len;
 }
 
-void minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes) {
+MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, int nounce, Pendentes * transacoes) {
 
   
   char str_timestamp[tamanho_numero(timestamp)];
@@ -123,27 +127,40 @@ void minerar_novo_bloco(char * minerador, int timestamp, char *hash_anterior, in
 
   char *resultado = sha256(str_digest);
 
-  printf("\n%s\n", resultado);
+  if (found_nounce == 1) {
+    pthread_exit(NULL);  
+  }
 
-  if (strncmp(resultado, "00", 2) != 0) {
+  if (found_nounce == 0 && strncmp(resultado, "000", 3) != 0) {
     return minerar_novo_bloco(minerador, timestamp, hash_anterior, nounce + 1, transacoes);
   }
 
+  pthread_mutex_lock(&lock);
+
+  if (found_nounce >= 1) {
+    pthread_exit(NULL);  
+  }
+
+  found_nounce = 1;
+
   // limpar_transacoes(&transacoes);
-
-
-  printf("\nminer: %s\n", minerador);
-  printf("\nnounce: %d\n", nounce);
-
   // TODO
   // 1. Adicionar transação da rede para o minerador
   // 2. Fazer operações nas carteiras a partir de transações pendentes
   // 3. Liberar lista de transações pendentes
 
-  // return criar_novo_bloco(resultado, NULL, nounce);
+  transacoes = adicionar_transacao(NULL, minerador, 25.0, transacoes);
+
+  MineracaoRetorno * retorno = (MineracaoRetorno *) malloc(sizeof(MineracaoRetorno));
+
+  retorno->minerador = minerador; 
+  retorno->nounce = nounce;
+  retorno->transacoes = transacoes;
+
+  pthread_mutex_unlock(&lock);
+
+  return retorno;
 }
-
-
 
 void * minerar_bloco(void * args) {
   MineracaoParams * mx = (MineracaoParams *) args;
@@ -154,17 +171,11 @@ void * minerar_bloco(void * args) {
 
   char *hash_anterior =  mx->b->hash;
   
+  MineracaoRetorno *tmp = minerar_novo_bloco(mx->minerador, mx->b->timestamp, hash_anterior, mx->valor_inicial, mx->transacoes);
 
-  printf("%d\n", mx->b->timestamp);
+  mx->b = adicionar_bloco(hash_anterior, tmp->transacoes, tmp->nounce, mx->b);
 
-  minerar_novo_bloco(mx->minerador, mx->b->timestamp, hash_anterior, mx->valor_inicial, mx->transacoes);
+  found_nounce = 0;
 
-  /*
-  char * valor = (char *) "meetexto";
-
-  Block *tmp = minerar_novo_bloco(minerador, b->timestamp, valor, 0, transacoes);
-
-  printf("%d\n", tmp->timestamp);
-*/
   pthread_exit(NULL);
 }

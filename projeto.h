@@ -4,6 +4,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define STR_SIZE 32
+
+typedef struct {
+  char * nome;
+  float saldo;
+} Carteira;
+
+struct listaEncadeada {
+    char chave[STR_SIZE];
+    Carteira valor;
+    listaEncadeada *proximo;
+};
+
+struct hashEncadeada {
+    listaEncadeada *primeiro;
+};
+
+struct hashTable {
+  union {
+      hashEncadeada *encadeada;
+  } tabela;
+  int tamanho;
+};
+
 typedef struct {
   char * remetente;
   char * destinatario;
@@ -27,18 +51,35 @@ typedef struct MineracaoParams {
   char * minerador; 
   Block * b; 
   Pendentes * transacoes;
-  char * vencedor;
   int valor_inicial;
 } MineracaoParams;
 
+typedef struct MineracaoRetorno {
+  char * minerador; 
+  int nounce;
+  Pendentes * transacoes;
+} MineracaoRetorno;
+
 
 Block * adicionar_bloco(char *hash_anterior, Pendentes * transacoes, int nounce, Block * b);
+
 Pendentes * adicionar_transacao(char * remetente, char * destinatario, float valor, Pendentes * p);
 
 void imprimir_lista(Pendentes * p);
 
-
 void * minerar_bloco(void * args);
+
+int hash(const char chave[STR_SIZE], int tamanho, int tentativa = 0);
+
+hashTable criar_hash_table (int tamanho);
+
+void destruir_hash_table (hashTable hash);
+
+void inserir_hash_table (hashTable hash, char chave[STR_SIZE], Carteira valor);
+
+void retornar_saldo(hashTable hash, char chave[STR_SIZE]);
+
+
 
 // DECLARAÇOES PARA O SHA256
 #define SHA256_BLOCK_SIZE 32
