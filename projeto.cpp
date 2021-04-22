@@ -126,17 +126,19 @@ void realizar_transacoes(Pendentes *lista, hashTable * ht) {
       return;
 
     Pendentes *atual = lista;
-    while (atual != NULL)
-    {
-        printf("remetente: %s, destinatario: %s, valor: %f\n", atual->transacao.remetente, atual->transacao.destinatario,
-         atual->transacao.valor);
+    Pendentes *prox;
 
+    while (atual != NULL) {
         ht = realizar_transacao_carteira(ht, atual->transacao.remetente, atual->transacao.valor * - 1);
         ht = realizar_transacao_carteira(ht, atual->transacao.destinatario, atual->transacao.valor);
-         
-        
+
+        prox = atual->prox;
+        free(atual);
+
+        atual = prox;
 
         // IMPRIMINDO O SALDO
+        /*
          int idx = hash(atual->transacao.remetente, ht->tamanho);
     
           listaEncadeada *lista;
@@ -156,11 +158,11 @@ void realizar_transacoes(Pendentes *lista, hashTable * ht) {
           }
 
           printf("saldo: %f\n", saldo);
-
-        ///
-
-        atual = atual->prox;
+          */
+        //
     }
+
+    lista = NULL;
 }
 
 int tamanho_numero(int n) {
@@ -215,7 +217,9 @@ MineracaoRetorno * minerar_novo_bloco(char * minerador, int timestamp, char *has
   // 3. Liberar lista de transações pendentes
 
   // realizar transações
-  realizar_transacoes(transacoes, ht);
+  realizar_transacoes(transacoes, ht); 
+  
+  transacoes = NULL;
 
   transacoes = adicionar_transacao(NULL, minerador, 25.0, transacoes);
 

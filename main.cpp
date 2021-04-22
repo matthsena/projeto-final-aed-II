@@ -36,8 +36,6 @@ int main(int argc, char *argv[]) {
     carteira.saldo = 100.00;
 
     inserir_hash_table(tabela_hash, nome, carteira);
-
-
   }
 
   // Iniciar transação
